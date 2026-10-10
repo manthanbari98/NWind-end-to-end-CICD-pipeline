@@ -9,4 +9,14 @@ stages:
   displayName: "Build ARM Template"
 
 - variables:
-  group: groupdev
+  group: devgroup
+
+  jobs:
+  - job: BuildARM
+    displayName: "Build ARM"
+    steps:
+    - template: ci_build.yaml
+      parameters:
+        DataFactory: $(DataFactory)
+        ResourceGroup: $(ResourceGroup)
+        SubscriptionId: $(SubscriptionId)
