@@ -1,0 +1,19 @@
+{
+	"name": "DS_parameters",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_adls",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "params.json",
+				"fileSystem": "parameters"
+			}
+		},
+		"schema": {}
+	}
+}
