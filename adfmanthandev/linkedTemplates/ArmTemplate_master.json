@@ -7,6 +7,10 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "adfmanthandev"
 		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://keyvaultmanthandev.vault.azure.net/"
+		},
 		"LS_adls_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://storagemanthandev.dfs.core.windows.net/"
@@ -41,6 +45,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"AzureKeyVault1_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
 					},
 					"LS_adls_properties_typeProperties_url": {
 						"value": "[parameters('LS_adls_properties_typeProperties_url')]"

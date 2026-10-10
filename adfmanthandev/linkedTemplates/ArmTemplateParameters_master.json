@@ -5,6 +5,9 @@
 		"factoryName": {
 			"value": "adfmanthandev"
 		},
+		"AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://keyvaultmanthandev.vault.azure.net/"
+		},
 		"LS_adls_properties_typeProperties_url": {
 			"value": "https://storagemanthandev.dfs.core.windows.net/"
 		},
