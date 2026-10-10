@@ -1,2 +1,12 @@
 trigger:
 - mainn
+
+pool:
+  vmImage: "ubuntu-latest"
+
+stages:
+- stage: BuildARMTemplate
+  displayName: "Build ARM Template"
+
+- variables:
+  group: groupdev
