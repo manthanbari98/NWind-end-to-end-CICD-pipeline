@@ -9,7 +9,7 @@ stages:
   displayName: "Build ARM Template"
 
   variables:
-  group: devgroup
+  - group: devgroup
 
   jobs:
   - job: BuildARM
