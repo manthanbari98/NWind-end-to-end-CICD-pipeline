@@ -46,6 +46,10 @@
 				],
 				"userProperties": [],
 				"typeProperties": {
+					"items": {
+						"value": "@activity('LookupData').output.value[0].params",
+						"type": "Expression"
+					},
 					"activities": [
 						{
 							"name": "Copy data",
