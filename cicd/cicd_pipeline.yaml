@@ -17,7 +17,7 @@ stages:
   - job: BuildARM
     displayName: "Build ARM"
     steps:
-    - template: ci_build.yml
+    - template: ci_build.yaml
       parameters:
         DataFactory: $(DataFactory)
         ResourceGroup: $(ResourceGroup)
@@ -37,7 +37,7 @@ stages:
   - job: DeployToDEV
     displayName: "Deploy To DEV"
     steps:
-    - template: cd_deploy.yml
+    - template: cd_deploy.yaml
       parameters:
         AzureResourceManagerConnection: adf-azure-service-connection
         DataFactory: $(DataFactory)
@@ -59,7 +59,7 @@ stages:
   - job: DeployToQA
     displayName: "Deploy To QA"
     steps:
-    - template: cd_deploy.yml
+    - template: cd_deploy.yaml
       parameters:
         AzureResourceManagerConnection: adf-azure-service-connection
         DataFactory: $(DataFactory)
