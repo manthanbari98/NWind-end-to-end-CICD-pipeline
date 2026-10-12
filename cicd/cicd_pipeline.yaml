@@ -5,6 +5,8 @@ pool:
   vmImage: "ubuntu-latest"
 
 stages:
+
+# Build ARM Template
 - stage: BuildARMTemplate
   displayName: "Build ARM Template"
 
@@ -15,11 +17,12 @@ stages:
   - job: BuildARM
     displayName: "Build ARM"
     steps:
-    - template: ci_build.yaml
+    - template: ci_build.yml
       parameters:
         DataFactory: $(DataFactory)
         ResourceGroup: $(ResourceGroup)
         SubscriptionId: $(SubscriptionId)
+
 
 # DEPLOY TO DEV
 - stage: DeployToDEV
@@ -34,7 +37,7 @@ stages:
   - job: DeployToDEV
     displayName: "Deploy To DEV"
     steps:
-    - template: cd_deploy.yaml
+    - template: cd_deploy.yml
       parameters:
         AzureResourceManagerConnection: adf-azure-service-connection
         DataFactory: $(DataFactory)
@@ -56,7 +59,7 @@ stages:
   - job: DeployToQA
     displayName: "Deploy To QA"
     steps:
-    - template: cd_deploy.yaml
+    - template: cd_deploy.yml
       parameters:
         AzureResourceManagerConnection: adf-azure-service-connection
         DataFactory: $(DataFactory)
@@ -83,7 +86,7 @@ stages:
         deploy:
           steps:
           - checkout: self
-          - template: cd_deploy.yaml
+          - template: cd_deploy.yml
             parameters:
               AzureResourceManagerConnection: adf-azure-service-connection
               DataFactory: $(DataFactory)
