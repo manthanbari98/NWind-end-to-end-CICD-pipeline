@@ -86,7 +86,7 @@ stages:
         deploy:
           steps:
           - checkout: self
-          - template: cd_deploy.yml
+          - template: cd_deploy.yaml
             parameters:
               AzureResourceManagerConnection: adf-azure-service-connection
               DataFactory: $(DataFactory)
