@@ -92,4 +92,4 @@ stages:
               DataFactory: $(DataFactory)
               SubscriptionId: $(SubscriptionId)
               ResourceGroup: $(ResourceGroup)
-              Environment: pd
+              Environment: prod
