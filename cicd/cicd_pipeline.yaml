@@ -39,7 +39,7 @@ stages:
     steps:
     - template: cd_deploy.yaml
       parameters:
-        AzureResourceManagerConnection: adf-azure-service-connection
+        AzureResourceManagerConnection: tutorial-service-connection
         DataFactory: $(DataFactory)
         SubscriptionId: $(SubscriptionId)
         ResourceGroup: $(ResourceGroup)
@@ -61,7 +61,7 @@ stages:
     steps:
     - template: cd_deploy.yaml
       parameters:
-        AzureResourceManagerConnection: adf-azure-service-connection
+        AzureResourceManagerConnection: tutorial-service-connection
         DataFactory: $(DataFactory)
         SubscriptionId: $(SubscriptionId)
         ResourceGroup: $(ResourceGroup)
@@ -88,7 +88,7 @@ stages:
           - checkout: self
           - template: cd_deploy.yaml
             parameters:
-              AzureResourceManagerConnection: adf-azure-service-connection
+              AzureResourceManagerConnection: tutorial-service-connection
               DataFactory: $(DataFactory)
               SubscriptionId: $(SubscriptionId)
               ResourceGroup: $(ResourceGroup)
