@@ -1,12 +1,28 @@
 {
-	"name": "LS_http",
+	"name": "LS_SqlServer",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
 	"properties": {
 		"annotations": [],
-		"type": "HttpServer",
+		"type": "SqlServer",
 		"typeProperties": {
-			"url": "https://raw.githubusercontent.com/",
-			"enableServerCertificateValidation": true,
-			"authenticationType": "Anonymous"
+			"server": "DESKTOP-86E7MBU\\SQLEXPRESS",
+			"database": "NwindDatawareHouse",
+			"encrypt": "mandatory",
+			"trustServerCertificate": true,
+			"authenticationType": "SQL",
+			"userName": "adf_nwind",
+			"password": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LS_AzureKeyVault1",
+					"type": "LinkedServiceReference"
+				},
+				"secretName": "sql-pass"
+			}
+		},
+		"connectVia": {
+			"referenceName": "onprem-integrationRuntime",
+			"type": "IntegrationRuntimeReference"
 		}
 	}
 }
