@@ -5,19 +5,35 @@
 		"factoryName": {
 			"type": "string",
 			"metadata": "Data Factory name",
-			"defaultValue": "adfmanthandev"
+			"defaultValue": "adf-nwind-dev"
 		},
-		"AzureKeyVault1_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://keyvaultmanthandev.vault.azure.net/"
+		"LS_AzureDataLakeStorage_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_AzureDataLakeStorage'"
 		},
-		"LS_adls_properties_typeProperties_url": {
+		"LS_AzureDataLakeStorage_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://storagemanthandev.dfs.core.windows.net/"
+			"defaultValue": "https://storagedopdev.dfs.core.windows.net/"
 		},
-		"LS_http_properties_typeProperties_url": {
+		"LS_AzureKeyVault1_properties_typeProperties_baseUrl": {
 			"type": "string",
-			"defaultValue": "https://raw.githubusercontent.com/"
+			"defaultValue": "https://nwind-keyvault-dev.vault.azure.net/"
+		},
+		"LS_SqlServer_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "DESKTOP-86E7MBU\\SQLEXPRESS"
+		},
+		"LS_SqlServer_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "NwindDatawareHouse"
+		},
+		"LS_SqlServer_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "adf_nwind"
+		},
+		"onprem-integrationRuntime_properties_typeProperties_linkedInfo_resourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/b72edf6d-6bb6-4b17-9706-092af11ede19/resourcegroups/adf_learning/providers/Microsoft.DataFactory/factories/adf-tutorial-manthan/integrationruntimes/SelfHostedIntegrationRuntime"
 		}
 	},
 	"variables": {
@@ -25,13 +41,13 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/PL_copydata')]",
+			"name": "[concat(parameters('factoryName'), '/PL_DataCollection')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "LookupData",
+						"name": "Lookup",
 						"type": "Lookup",
 						"dependsOn": [],
 						"policy": {
@@ -44,18 +60,16 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "JsonSource",
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
+								"type": "SqlServerSource",
+								"sqlReaderQuery": {
+									"value": "SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'bronze';",
+									"type": "Expression"
 								},
-								"formatSettings": {
-									"type": "JsonReadSettings"
-								}
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
 							},
 							"dataset": {
-								"referenceName": "DS_params",
+								"referenceName": "DS_SqlServerLookup",
 								"type": "DatasetReference",
 								"parameters": {}
 							},
@@ -67,7 +81,7 @@
 						"type": "ForEach",
 						"dependsOn": [
 							{
-								"activity": "LookupData",
+								"activity": "Lookup",
 								"dependencyConditions": [
 									"Succeeded"
 								]
@@ -76,12 +90,12 @@
 						"userProperties": [],
 						"typeProperties": {
 							"items": {
-								"value": "@activity('LookupData').output.value[0].params",
+								"value": "@activity('Lookup').output.value",
 								"type": "Expression"
 							},
 							"activities": [
 								{
-									"name": "Copy data",
+									"name": "Copy data1",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -94,14 +108,9 @@
 									"userProperties": [],
 									"typeProperties": {
 										"source": {
-											"type": "DelimitedTextSource",
-											"storeSettings": {
-												"type": "HttpReadSettings",
-												"requestMethod": "GET"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextReadSettings"
-											}
+											"type": "SqlServerSource",
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
 										},
 										"sink": {
 											"type": "DelimitedTextSink",
@@ -126,11 +135,15 @@
 									},
 									"inputs": [
 										{
-											"referenceName": "DS_source",
+											"referenceName": "DS_SqlServerSource",
 											"type": "DatasetReference",
 											"parameters": {
-												"url": {
-													"value": "@item().source_url",
+												"schema": {
+													"value": "@item().TABLE_SCHEMA",
+													"type": "Expression"
+												},
+												"table": {
+													"value": "@item().TABLE_NAME",
 													"type": "Expression"
 												}
 											}
@@ -138,11 +151,11 @@
 									],
 									"outputs": [
 										{
-											"referenceName": "DS_sink",
+											"referenceName": "DS_Sink",
 											"type": "DatasetReference",
 											"parameters": {
-												"file": {
-													"value": "@item().sink_file",
+												"table": {
+													"value": "@item().TABLE_NAME",
 													"type": "Expression"
 												}
 											}
@@ -156,59 +169,50 @@
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"parameters": {
-					"backfill_flag": {
-						"type": "string",
-						"defaultValue": "no"
-					},
-					"incremental_flag": {
-						"type": "string",
-						"defaultValue": "no"
-					}
-				},
-				"annotations": []
+				"annotations": [],
+				"lastPublishTime": "2026-10-15T14:40:59Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_params')]",
-				"[concat(variables('factoryId'), '/datasets/DS_source')]",
-				"[concat(variables('factoryId'), '/datasets/DS_sink')]"
+				"[concat(variables('factoryId'), '/datasets/DS_SqlServerLookup')]",
+				"[concat(variables('factoryId'), '/datasets/DS_SqlServerSource')]",
+				"[concat(variables('factoryId'), '/datasets/DS_Sink')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_params')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
+			"name": "[concat(parameters('factoryName'), '/pipeline1')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_adls",
-					"type": "LinkedServiceReference"
+				"activities": [
+					{
+						"name": "Wait1",
+						"type": "Wait",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"waitTimeInSeconds": 10
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
 				},
 				"annotations": [],
-				"type": "Json",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobFSLocation",
-						"fileName": "params.json",
-						"fileSystem": "parameters"
-					}
-				},
-				"schema": {}
+				"lastPublishTime": "2026-10-15T14:40:56Z"
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_adls')]"
-			]
+			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_sink')]",
+			"name": "[concat(parameters('factoryName'), '/DS_Sink')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_adls",
+					"referenceName": "LS_AzureDataLakeStorage",
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"file": {
+					"table": {
 						"type": "string"
 					}
 				},
@@ -218,7 +222,11 @@
 					"location": {
 						"type": "AzureBlobFSLocation",
 						"fileName": {
-							"value": "@dataset().file",
+							"value": "@concat(dataset().table,'.csv')",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@concat('rawdata/',dataset().table)",
 							"type": "Expression"
 						},
 						"fileSystem": "raw"
@@ -228,142 +236,142 @@
 					"firstRowAsHeader": true,
 					"quoteChar": "\""
 				},
-				"schema": [
-					{
-						"name": "Prop_0",
-						"type": "String"
-					},
-					{
-						"name": "Prop_1",
-						"type": "String"
-					},
-					{
-						"name": "Prop_2",
-						"type": "String"
-					},
-					{
-						"name": "Prop_3",
-						"type": "String"
-					},
-					{
-						"name": "Prop_4",
-						"type": "String"
-					},
-					{
-						"name": "Prop_5",
-						"type": "String"
-					}
-				]
+				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_adls')]"
+				"[concat(variables('factoryId'), '/linkedServices/LS_AzureDataLakeStorage')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/DS_source')]",
+			"name": "[concat(parameters('factoryName'), '/DS_SqlServerLookup')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "LS_http",
+					"referenceName": "LS_SqlServer",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_SqlServer')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_SqlServerSource')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_SqlServer",
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"url": {
+					"schema": {
+						"type": "string"
+					},
+					"table": {
 						"type": "string"
 					}
 				},
 				"annotations": [],
-				"type": "DelimitedText",
+				"type": "SqlServerTable",
+				"schema": [],
 				"typeProperties": {
-					"location": {
-						"type": "HttpServerLocation",
-						"relativeUrl": {
-							"value": "@dataset().url",
-							"type": "Expression"
-						}
+					"schema": {
+						"value": "@dataset().schema",
+						"type": "Expression"
 					},
-					"columnDelimiter": ",",
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
+					"table": {
+						"value": "@dataset().table",
+						"type": "Expression"
+					}
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_http')]"
+				"[concat(variables('factoryId'), '/linkedServices/LS_SqlServer')]"
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AzureKeyVault1')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_adls')]",
+			"name": "[concat(parameters('factoryName'), '/LS_AzureDataLakeStorage')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
 				"type": "AzureBlobFS",
 				"typeProperties": {
-					"url": "[parameters('LS_adls_properties_typeProperties_url')]"
+					"url": "[parameters('LS_AzureDataLakeStorage_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('LS_AzureDataLakeStorage_accountKey')]"
+					}
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LS_http')]",
+			"name": "[concat(parameters('factoryName'), '/LS_AzureKeyVault1')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "HttpServer",
+				"type": "AzureKeyVault",
 				"typeProperties": {
-					"url": "[parameters('LS_http_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Anonymous"
+					"baseUrl": "[parameters('LS_AzureKeyVault1_properties_typeProperties_baseUrl')]"
 				}
 			},
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/trigger_daily')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
+			"name": "[concat(parameters('factoryName'), '/LS_SqlServer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Stopped",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "PL_copydata",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
+				"type": "SqlServer",
 				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2026-10-10T03:19:00",
-						"timeZone": "India Standard Time"
+					"server": "[parameters('LS_SqlServer_properties_typeProperties_server')]",
+					"database": "[parameters('LS_SqlServer_properties_typeProperties_database')]",
+					"encrypt": "mandatory",
+					"trustServerCertificate": true,
+					"authenticationType": "SQL",
+					"userName": "[parameters('LS_SqlServer_properties_typeProperties_userName')]",
+					"password": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "LS_AzureKeyVault1",
+							"type": "LinkedServiceReference"
+						},
+						"secretName": "sql-pass"
 					}
+				},
+				"connectVia": {
+					"referenceName": "onprem-integrationRuntime",
+					"type": "IntegrationRuntimeReference"
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/PL_copydata')]"
+				"[concat(variables('factoryId'), '/integrationRuntimes/onprem-integrationRuntime')]",
+				"[concat(variables('factoryId'), '/linkedServices/LS_AzureKeyVault1')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/onprem-integrationRuntime')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {
+					"linkedInfo": {
+						"resourceId": "[parameters('onprem-integrationRuntime_properties_typeProperties_linkedInfo_resourceId')]",
+						"authorizationType": "Rbac"
+					}
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }
