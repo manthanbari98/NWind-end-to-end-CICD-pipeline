@@ -5,19 +5,35 @@
 		"factoryName": {
 			"type": "string",
 			"metadata": "Data Factory name",
-			"defaultValue": "adfmanthandev"
+			"defaultValue": "adf-nwind-dev"
 		},
-		"AzureKeyVault1_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "https://keyvaultmanthandev.vault.azure.net/"
+		"LS_AzureDataLakeStorage_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'LS_AzureDataLakeStorage'"
 		},
-		"LS_adls_properties_typeProperties_url": {
+		"LS_AzureDataLakeStorage_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://storagemanthandev.dfs.core.windows.net/"
+			"defaultValue": "https://storagedopdev.dfs.core.windows.net/"
 		},
-		"LS_http_properties_typeProperties_url": {
+		"LS_AzureKeyVault1_properties_typeProperties_baseUrl": {
 			"type": "string",
-			"defaultValue": "https://raw.githubusercontent.com/"
+			"defaultValue": "https://nwind-keyvault-dev.vault.azure.net/"
+		},
+		"LS_SqlServer_properties_typeProperties_server": {
+			"type": "string",
+			"defaultValue": "DESKTOP-86E7MBU\\SQLEXPRESS"
+		},
+		"LS_SqlServer_properties_typeProperties_database": {
+			"type": "string",
+			"defaultValue": "NwindDatawareHouse"
+		},
+		"LS_SqlServer_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "adf_nwind"
+		},
+		"onprem-integrationRuntime_properties_typeProperties_linkedInfo_resourceId": {
+			"type": "string",
+			"defaultValue": "/subscriptions/b72edf6d-6bb6-4b17-9706-092af11ede19/resourcegroups/adf_learning/providers/Microsoft.DataFactory/factories/adf-tutorial-manthan/integrationruntimes/SelfHostedIntegrationRuntime"
 		},
 		"containerUri": {
 			"type": "string",
@@ -33,7 +49,7 @@
 	},
 	"resources": [
 		{
-			"name": "adfmanthandev_ArmTemplate_0",
+			"name": "adf-nwind-dev_ArmTemplate_0",
 			"type": "Microsoft.Resources/deployments",
 			"apiVersion": "2024-03-01",
 			"properties": {
@@ -46,14 +62,26 @@
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
 					},
-					"AzureKeyVault1_properties_typeProperties_baseUrl": {
-						"value": "[parameters('AzureKeyVault1_properties_typeProperties_baseUrl')]"
+					"LS_AzureDataLakeStorage_accountKey": {
+						"value": "[parameters('LS_AzureDataLakeStorage_accountKey')]"
 					},
-					"LS_adls_properties_typeProperties_url": {
-						"value": "[parameters('LS_adls_properties_typeProperties_url')]"
+					"LS_AzureDataLakeStorage_properties_typeProperties_url": {
+						"value": "[parameters('LS_AzureDataLakeStorage_properties_typeProperties_url')]"
 					},
-					"LS_http_properties_typeProperties_url": {
-						"value": "[parameters('LS_http_properties_typeProperties_url')]"
+					"LS_AzureKeyVault1_properties_typeProperties_baseUrl": {
+						"value": "[parameters('LS_AzureKeyVault1_properties_typeProperties_baseUrl')]"
+					},
+					"onprem-integrationRuntime_properties_typeProperties_linkedInfo_resourceId": {
+						"value": "[parameters('onprem-integrationRuntime_properties_typeProperties_linkedInfo_resourceId')]"
+					},
+					"LS_SqlServer_properties_typeProperties_server": {
+						"value": "[parameters('LS_SqlServer_properties_typeProperties_server')]"
+					},
+					"LS_SqlServer_properties_typeProperties_database": {
+						"value": "[parameters('LS_SqlServer_properties_typeProperties_database')]"
+					},
+					"LS_SqlServer_properties_typeProperties_userName": {
+						"value": "[parameters('LS_SqlServer_properties_typeProperties_userName')]"
 					}
 				}
 			},
