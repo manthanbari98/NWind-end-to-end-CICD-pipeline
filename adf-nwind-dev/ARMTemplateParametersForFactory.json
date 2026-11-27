@@ -1,0 +1,30 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "adf-nwind-dev"
+		},
+		"LS_AzureDataLakeStorage_accountKey": {
+			"value": ""
+		},
+		"LS_AzureDataLakeStorage_properties_typeProperties_url": {
+			"value": "https://storagedopdev.dfs.core.windows.net/"
+		},
+		"LS_AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://nwind-keyvault-dev.vault.azure.net/"
+		},
+		"LS_SqlServer_properties_typeProperties_server": {
+			"value": "DESKTOP-86E7MBU\\SQLEXPRESS"
+		},
+		"LS_SqlServer_properties_typeProperties_database": {
+			"value": "NwindDatawareHouse"
+		},
+		"LS_SqlServer_properties_typeProperties_userName": {
+			"value": "adf_nwind"
+		},
+		"onprem-integrationRuntime_properties_typeProperties_linkedInfo_resourceId": {
+			"value": "/subscriptions/b72edf6d-6bb6-4b17-9706-092af11ede19/resourcegroups/adf_learning/providers/Microsoft.DataFactory/factories/adf-tutorial-manthan/integrationruntimes/SelfHostedIntegrationRuntime"
+		}
+	}
+}
