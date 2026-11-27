@@ -1,12 +1,12 @@
 {
-	"name": "DS_sink",
+	"name": "DS_Sink",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "LS_adls",
+			"referenceName": "LS_AzureDataLakeStorage",
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"file": {
+			"table": {
 				"type": "string"
 			}
 		},
@@ -16,7 +16,11 @@
 			"location": {
 				"type": "AzureBlobFSLocation",
 				"fileName": {
-					"value": "@dataset().file",
+					"value": "@concat(dataset().table,'.csv')",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@concat('rawdata/',dataset().table)",
 					"type": "Expression"
 				},
 				"fileSystem": "raw"
@@ -26,31 +30,7 @@
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
-		"schema": [
-			{
-				"name": "Prop_0",
-				"type": "String"
-			},
-			{
-				"name": "Prop_1",
-				"type": "String"
-			},
-			{
-				"name": "Prop_2",
-				"type": "String"
-			},
-			{
-				"name": "Prop_3",
-				"type": "String"
-			},
-			{
-				"name": "Prop_4",
-				"type": "String"
-			},
-			{
-				"name": "Prop_5",
-				"type": "String"
-			}
-		]
-	}
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
 }
