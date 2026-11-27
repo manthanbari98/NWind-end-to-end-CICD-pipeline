@@ -1,0 +1,12 @@
+{
+	"name": "onprem-integrationRuntime",
+	"properties": {
+		"type": "SelfHosted",
+		"typeProperties": {
+			"linkedInfo": {
+				"resourceId": "/subscriptions/b72edf6d-6bb6-4b17-9706-092af11ede19/resourcegroups/adf_learning/providers/Microsoft.DataFactory/factories/adf-tutorial-manthan/integrationruntimes/SelfHostedIntegrationRuntime",
+				"authorizationType": "Rbac"
+			}
+		}
+	}
+}
