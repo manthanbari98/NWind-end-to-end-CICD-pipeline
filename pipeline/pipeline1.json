@@ -8,10 +8,12 @@
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
-					"waitTimeInSeconds": 1
+					"waitTimeInSeconds": 10
 				}
 			}
 		],
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2026-10-15T14:40:56Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }
