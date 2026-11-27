@@ -3,16 +3,28 @@
 	"contentVersion": "1.0.0.0",
 	"parameters": {
 		"factoryName": {
-			"value": "adfmanthanprod"
+			"value": "adf-nwind-prod"
 		},
-		"AzureKeyVault1_properties_typeProperties_baseUrl": {
-			"value": "https://keyvaultmanthanprod.vault.azure.net/"
+		"LS_AzureDataLakeStorage_accountKey": {
+			"value": ""
 		},
-		"LS_adls_properties_typeProperties_url": {
-			"value": "https://storagemanthanprod.dfs.core.windows.net/"
+		"LS_AzureDataLakeStorage_properties_typeProperties_url": {
+			"value": "https://storagedopprod.dfs.core.windows.net/"
 		},
-		"LS_http_properties_typeProperties_url": {
-			"value": "https://raw.githubusercontent.com/"
+		"LS_AzureKeyVault1_properties_typeProperties_baseUrl": {
+			"value": "https://nwind-keyvault-prod.vault.azure.net/"
+		},
+		"LS_SqlServer_properties_typeProperties_server": {
+			"value": "DESKTOP-86E7MBU\\SQLEXPRESS"
+		},
+		"LS_SqlServer_properties_typeProperties_database": {
+			"value": "NwindDatawareHouse"
+		},
+		"LS_SqlServer_properties_typeProperties_userName": {
+			"value": "adf_nwind"
+		},
+		"onprem-integrationRuntime_properties_typeProperties_linkedInfo_resourceId": {
+			"value": "/subscriptions/b72edf6d-6bb6-4b17-9706-092af11ede19/resourcegroups/adf_learning/providers/Microsoft.DataFactory/factories/adf-tutorial-manthan/integrationruntimes/SelfHostedIntegrationRuntime"
 		}
 	}
 }
