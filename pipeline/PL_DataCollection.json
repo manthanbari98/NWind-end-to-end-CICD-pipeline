@@ -1,9 +1,9 @@
 {
-	"name": "PL_copydata",
+	"name": "PL_DataCollection",
 	"properties": {
 		"activities": [
 			{
-				"name": "LookupData",
+				"name": "Lookup",
 				"type": "Lookup",
 				"dependsOn": [],
 				"policy": {
@@ -16,18 +16,16 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "JsonSource",
-						"storeSettings": {
-							"type": "AzureBlobFSReadSettings",
-							"recursive": true,
-							"enablePartitionDiscovery": false
+						"type": "SqlServerSource",
+						"sqlReaderQuery": {
+							"value": "SELECT TABLE_SCHEMA, TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'bronze';",
+							"type": "Expression"
 						},
-						"formatSettings": {
-							"type": "JsonReadSettings"
-						}
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "DS_params",
+						"referenceName": "DS_SqlServerLookup",
 						"type": "DatasetReference"
 					},
 					"firstRowOnly": false
@@ -38,7 +36,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "LookupData",
+						"activity": "Lookup",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -47,12 +45,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('LookupData').output.value[0].params",
+						"value": "@activity('Lookup').output.value",
 						"type": "Expression"
 					},
 					"activities": [
 						{
-							"name": "Copy data",
+							"name": "Copy data1",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -65,14 +63,9 @@
 							"userProperties": [],
 							"typeProperties": {
 								"source": {
-									"type": "DelimitedTextSource",
-									"storeSettings": {
-										"type": "HttpReadSettings",
-										"requestMethod": "GET"
-									},
-									"formatSettings": {
-										"type": "DelimitedTextReadSettings"
-									}
+									"type": "SqlServerSource",
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
 								},
 								"sink": {
 									"type": "DelimitedTextSink",
@@ -97,11 +90,15 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "DS_source",
+									"referenceName": "DS_SqlServerSource",
 									"type": "DatasetReference",
 									"parameters": {
-										"url": {
-											"value": "@item().source_url",
+										"schema": {
+											"value": "@item().TABLE_SCHEMA",
+											"type": "Expression"
+										},
+										"table": {
+											"value": "@item().TABLE_NAME",
 											"type": "Expression"
 										}
 									}
@@ -109,11 +106,11 @@
 							],
 							"outputs": [
 								{
-									"referenceName": "DS_sink",
+									"referenceName": "DS_Sink",
 									"type": "DatasetReference",
 									"parameters": {
-										"file": {
-											"value": "@item().sink_file",
+										"table": {
+											"value": "@item().TABLE_NAME",
 											"type": "Expression"
 										}
 									}
@@ -124,16 +121,8 @@
 				}
 			}
 		],
-		"parameters": {
-			"backfill_flag": {
-				"type": "string",
-				"defaultValue": "no"
-			},
-			"incremental_flag": {
-				"type": "string",
-				"defaultValue": "no"
-			}
-		},
-		"annotations": []
-	}
+		"annotations": [],
+		"lastPublishTime": "2026-10-15T14:40:59Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
 }
